@@ -8,7 +8,8 @@ import { Todo } from './components/TodoInfo/TodoInfo';
 export const App = () => {
   const [todos, setTodos] = useState<Todo[]>(
     todosFromServer.map(todo => {
-      const user = usersFromServer.find(u => u.id === todo.userId);
+      const user = usersFromServer.find(user => user.id === todo.userId);
+
       return {
         ...todo,
         user: user || {
@@ -25,10 +26,14 @@ export const App = () => {
   const [userId, setUserId] = useState('');
   const [errors, setErrors] = useState<{ title?: string; user?: string }>({});
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Optional: Remove any characters that are not letters, digits, or spaces
     // This regex keeps only letters, digits, and spaces
-    const cleanedValue = e.target.value.replace(/[^a-zA-Zа-яА-ЯіІєЄґҐ\d\s]/g, '');
+    const cleanedValue = event.target.value.replace(
+      /[^a-zA-Zа-яА-ЯіІєЄґҐ\d\s]/g,
+      '',
+    );
+
     setTitle(cleanedValue);
 
     // Clear error when user starts typing
@@ -37,8 +42,8 @@ export const App = () => {
     }
   };
 
-  const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setUserId(e.target.value);
+  const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setUserId(event.target.value);
 
     // Clear error when user selects
     if (errors.user) {
@@ -46,8 +51,8 @@ export const App = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     const newErrors: { title?: string; user?: string } = {};
 
@@ -61,17 +66,18 @@ export const App = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+
       return;
     }
 
-    const selectedUser = usersFromServer.find(u => u.id === Number(userId));
+    const selectedUser = usersFromServer.find(user => user.id === Number(userId));
 
     if (!selectedUser) {
       return;
     }
 
     const newTodo: Todo = {
-      id: Math.max(...todos.map(t => t.id), 0) + 1,
+      id: Math.max(...todos.map(todo => todo.id), 0) + 1,
       title: title.trim(),
       completed: false,
       userId: Number(userId),
